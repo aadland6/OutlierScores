@@ -128,5 +128,8 @@ if __name__ == "__main__":
     coefficent_columns = list(digits_df.columns)[0:-3]
     outliers_df = outlier_ensemble(digits_df, "Target", coefficent_columns)
     outliers_columns = global_mad(digits_df, "Target", coefficent_columns)
-    outliers_columns.to_csv("MADOutliers.csv", index=False)
+    outlier_rows = []
+    # cols = df[df.sum(axis=1) > 1]
+    out_subset = outliers_columns[outliers_columns.sum(axis=1) > 0]
+    out_subset.to_csv("MADSubset.csv", index=False)
    
