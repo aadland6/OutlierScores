@@ -116,6 +116,16 @@ def global_mad(data, target_col, columns):
     outlier_columns = pd.concat(df_list)
     return outlier_columns
 
+def row_outliers(row):
+    """Appends the column name where an outlier was detected 
+    """
+    outlier_cols = []
+    for item in row.index:
+        if row[item] == 1:
+            outlier_cols.append(item)
+    return " ".join(outlier_cols)
+
+    
 if __name__ == "__main__":
     digits = load_digits()
     digits_df = pd.DataFrame(digits.data)
@@ -132,4 +142,12 @@ if __name__ == "__main__":
     # cols = df[df.sum(axis=1) > 1]
     out_subset = outliers_columns[outliers_columns.sum(axis=1) > 0]
     out_subset.to_csv("MADSubset.csv", index=False)
-   
+    tool_tip = []
+    for index, row in outliers_columns.iterrows():
+        tool_tip.append(row_outliers(row))
+    outliers_df["ToolTip"] = tool_tip
+    out_columns = ['PCA_X', 'PCA_Y', 'Target', 'IsolationPrediction',
+                   'LOFPrediction', 'SVMPrediction', 'OutlierCount',
+                   'ToolTip']
+    out_df = outliers_df[out_columns]
+    out_df.to_csv("OutliersAnalysis.csv", index=False)
