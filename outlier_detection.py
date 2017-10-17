@@ -104,6 +104,17 @@ def build_maddf(data, columns):
         column_dict[column_key] = outliers_zscore(data[column])
     return column_dict
 
+def global_mad(data, target_col, columns):
+    """Calculates the outliers for the whole dataframe 
+    """
+    df_list = []
+    for target in set(data[target_col]):
+        target_subset, training_subset = subset_df(data, target_col, columns,
+                                                   target)
+        mad_df = pd.DataFrame.from_dict(build_maddf(training_subset, columns))
+        df_list.append(mad_df)
+    outlier_columns = pd.concat(df_list)
+    return outlier_columns
 
 if __name__ == "__main__":
     digits = load_digits()
@@ -116,4 +127,6 @@ if __name__ == "__main__":
     digits_df["Target"] = digits.target
     coefficent_columns = list(digits_df.columns)[0:-3]
     outliers_df = outlier_ensemble(digits_df, "Target", coefficent_columns)
-    d = build_maddf(digits_df, coefficent_columns)
+    outliers_columns = global_mad(digits_df, "Target", coefficent_columns)
+    outliers_columns.to_csv("MADOutliers.csv", index=False)
+   
