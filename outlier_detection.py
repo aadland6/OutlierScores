@@ -52,21 +52,19 @@ def outlier_ensemble(data, target_col, columns):
         # initalize the classifiers
         iso_clf = IsolationForest(max_samples=100, random_state=RNG)
         lof_clf = LocalOutlierFactor(n_neighbors=20)
-        svm_clf = svm.OneClassSVM(nu=.1, kernel="rbf", gamma=0.1,
-                                  random_state=RNG)
+
         # fit the classifiers
         iso_clf.fit(training_subset)
-        svm_clf.fit(training_subset)
+        
         lof_predictions = lof_clf.fit_predict(training_subset)
         # Predict the classifers
         iso_predictions = iso_clf.predict(training_subset)
-        svm_predictions = svm_clf.predict(training_subset)
+        
         outliers_count = [count_outliers(x) for x in zip(iso_predictions,
-                          lof_predictions, svm_predictions)]
+                          lof_predictions)]
         # join the data to the subset
         target_subset["IsolationPrediction"] = iso_predictions
         target_subset["LOFPrediction"] = lof_predictions
-        target_subset["SVMPrediction"] = svm_predictions
         target_subset["OutlierCount"] = outliers_count
         target_dfs.append(target_subset)
     joined_df = pd.concat(target_dfs)
@@ -139,4 +137,6 @@ if __name__ == "__main__":
     fuel_post_pca = build_pca(fuel_pre_pca)
     fuel_post_pca["Fuel"] = fuel_trimmed["Fuel"]
     fuel_post_pca.to_csv("FuelsPostPCA.csv", index=False)
+    outlier_df = outlier_ensemble(fuel_post_pca, target_col="Fuel",
+                                  columns=sans_fuel)
     
