@@ -127,27 +127,16 @@ def row_outliers(row):
 
 
 if __name__ == "__main__":
-    digits = load_digits()
-    digits_df = pd.DataFrame(digits.data)
-    digits_pca = PCA(n_components=2).fit_transform(digits_df)
-    x_axis = digits_pca[:, 0]
-    y_axis = digits_pca[:, 1]
-    digits_df["PCA_X"] = x_axis
-    digits_df["PCA_Y"] = y_axis
-    digits_df["Target"] = digits.target
-    coefficent_columns = list(digits_df.columns)[0:-3]
-    outliers_df = outlier_ensemble(digits_df, "Target", coefficent_columns)
-    outliers_columns = global_mad(digits_df, "Target", coefficent_columns)
-    outlier_rows = []
-    # cols = df[df.sum(axis=1) > 1]
-    out_subset = outliers_columns[outliers_columns.sum(axis=1) > 0]
-    out_subset.to_csv("MADSubset.csv", index=False)
-    tool_tip = []
-    for index, row in outliers_columns.iterrows():
-        tool_tip.append(row_outliers(row))
-    outliers_df["ToolTip"] = tool_tip
-    out_columns = ['PCA_X', 'PCA_Y', 'Target', 'IsolationPrediction',
-                   'LOFPrediction', 'SVMPrediction', 'OutlierCount',
-                   'ToolTip']
-    out_df = outliers_df[out_columns]
-    out_df.to_csv("OutliersAnalysis.csv", index=False)
+    fuel_data = pd.read_csv("fuel_d_imputed.csv")
+    keep_columns = ['Fuel', 'Acid  No', 'Sulfur', 'Tr-Ca', 
+                    'Tr-Pb', 'Tr-Na+K', 'Tr-V', '90% Rec', 'FBP', 
+                    '%R&L', 'Flash', 'Density',
+                    'Viscosity', 'Cloud Pt', 'Pour Pt', 
+                    'Ash', 'Carb Res', 'Acc Stab', 'PC', 'Demuls', 'Cet Indx']
+    fuel_trimmed = fuel_data[keep_columns].dropna(axis=0, how="any")
+    sans_fuel =[x for x in keep_columns if x != "Fuel"]
+    fuel_pre_pca = fuel_trimmed[sans_fuel]
+    fuel_post_pca = build_pca(fuel_pre_pca)
+    fuel_post_pca["Fuel"] = fuel_trimmed["Fuel"]
+    fuel_post_pca.to_csv("FuelsPostPCA.csv", index=False)
+    

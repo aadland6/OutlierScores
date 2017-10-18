@@ -74,6 +74,7 @@ if __name__ == "__main__":
     fuel_column_scores = column_completeness(fuel_d_clean)
     fuel_column_subset = [x[0] for x in fuel_column_scores.items() if x[1] > .69]
     fuel_d_clean_column_subset = fuel_d_clean[fuel_column_subset]
-    fuel_imputed = impute_median_category(fuel_d_clean, "Fuel")
+    fuel_imputed = impute_median_category(fuel_d_clean_column_subset, "Fuel")
+    fuel_imputed.to_csv("fuel_d_imputed.csv", index=False)
     
     
