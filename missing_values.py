@@ -12,12 +12,20 @@ def complete_cases(df):
     no_na  = df.dropna(axis=0, how="any")
     return no_na.shape[0]
 
-def complete_cases_category(df):
+def complete_cases_category(df, category_col):
     """Computes the complete cases per a category
     """
     category_dict = {}
+    for category in set(df[category_col]):
+        print(category)
+        category_df = df[df[category_col] == category]
+        category_dict[category] = complete_cases(category_df)
     return category_dict
 
+def column_completeness(df):
+    """Counts the column overall column completeness
+    """
+    return None
 # Complete cases
 # Missing Data Per Column 
 # Missing Data Per Column Per Category 
@@ -27,3 +35,4 @@ def complete_cases_category(df):
 if __name__ == "__main__":
     data = pd.read_csv("FakeCSV.csv")
     d = complete_cases(data)
+    b = complete_cases_category(data, "FakeCategory")
