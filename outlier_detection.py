@@ -136,7 +136,8 @@ if __name__ == "__main__":
     fuel_pre_pca = fuel_trimmed[sans_fuel]
     fuel_post_pca = build_pca(fuel_pre_pca)
     fuel_post_pca["Fuel"] = fuel_trimmed["Fuel"]
-    fuel_post_pca.to_csv("FuelsPostPCA.csv", index=False)
     outlier_df = outlier_ensemble(fuel_post_pca, target_col="Fuel",
                                   columns=sans_fuel)
-    
+    out_columns = ["Fuel", "IsolationPrediction", "LOFPrediction", "PCA_X",
+                   "PCA_Y", "OutlierCount"]
+    outlier_df[out_columns].to_csv("FuelsOutlierLabeled.csv", index=False)
