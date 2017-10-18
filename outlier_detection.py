@@ -105,7 +105,7 @@ def build_maddf(data, columns):
     return column_dict
 
 def global_mad(data, target_col, columns):
-    """Calculates the outliers for the whole dataframe 
+    """Calculates the outliers for the whole dataframe
     """
     df_list = []
     for target in set(data[target_col]):
@@ -117,7 +117,7 @@ def global_mad(data, target_col, columns):
     return outlier_columns
 
 def row_outliers(row):
-    """Appends the column name where an outlier was detected 
+    """Appends the column name where an outlier was detected
     """
     outlier_cols = []
     for item in row.index:
@@ -125,7 +125,7 @@ def row_outliers(row):
             outlier_cols.append(item)
     return " ".join(outlier_cols)
 
-    
+
 if __name__ == "__main__":
     digits = load_digits()
     digits_df = pd.DataFrame(digits.data)
