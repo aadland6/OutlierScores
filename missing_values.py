@@ -64,17 +64,27 @@ def impute_median_category(df, category_col):
         median_dfs.append(category_df.fillna(category_df.median()))
     return pd.concat(median_dfs)        
 
+def prep_data(data, keep, category_col, min_comp):
+    """Calculates the completness of a dataset and imputes the median 
+    """
+    subset_data = data[keep]
+    complete_scores = column_completeness(subset_data)
+    complete_columns = [x[0] for x in complete_scores.items() if x[1] > min_comp]
+    complete_subset = subset_data[complete_columns]
+    complete_imputed = impute_median_category(complete_subset, category_col)
+    return complete_imputed
+
 if __name__ == "__main__":
-    data = pd.read_csv("FakeCSV.csv")
-    #### fuels ####
+    # data = pd.read_csv("FakeCSV.csv")
+    #### diesel fuels ####
     fuel_d = pd.read_csv("pqis_d.csv")
-    keep_columns =  list(fuel_d.columns)[0:-5]
-    no_method = [x for x in keep_columns if "_M" not in x]
-    fuel_d_clean = fuel_d[no_method] 
-    fuel_column_scores = column_completeness(fuel_d_clean)
-    fuel_column_subset = [x[0] for x in fuel_column_scores.items() if x[1] > .69]
-    fuel_d_clean_column_subset = fuel_d_clean[fuel_column_subset]
-    fuel_imputed = impute_median_category(fuel_d_clean_column_subset, "Fuel")
-    fuel_imputed.to_csv("fuel_d_imputed.csv", index=False)
-    
-    
+    keep_columns_d =  list(fuel_d.columns)[0:-5]
+    no_method_d = [x for x in keep_columns_d if "_M" not in x]
+    clean_d = prep_data(fuel_d, no_method_d, "Fuel", .5)
+    clean_d.to_csv("pqis_imputed_d.csv", index=False)
+    #### aviation fuels ####
+    fuel_a = pd.read_csv("pqis_a.csv")
+    keep_columns_a = list(fuel_a.columns)[0:-5]
+    no_method_a = [x for x in keep_columns_a if "_M" not in x]
+    clean_a = prep_data(fuel_a, no_method_a, "Fuel", .5)
+    clean_a.to_csv("pqis_imputed_a.csv", index=False)
