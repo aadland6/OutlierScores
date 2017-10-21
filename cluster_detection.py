@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import hdbscan
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_samples, silhouette_score
 
@@ -60,6 +61,8 @@ def silhouette_k(data, n_clusters):
 
 if __name__ == "__main__":
     data = pd.read_csv("FakeCSV.csv")
+    data_keeps = data[list(data.columns)[8:]]
     data.head()
     b = score_k(data[list(data.columns)[8:]], krange=range(2,10))
     c = silhouette_k(data[list(data.columns)[8:]], n_clusters=5)
+   
