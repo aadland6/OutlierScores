@@ -6,11 +6,16 @@ Created on Fri Oct 20 13:07:10 2017
 """
 import pandas as pd
 import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import hdbscan
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_samples, silhouette_score
+
+sns.set_context('poster')
+sns.set_color_codes()
+plot_kwds = {'alpha' : 0.25, 's' : 80, 'linewidths':0}
 
 def score_k(data, krange):
     """Generates the score and distoration for elbow plots
@@ -58,6 +63,19 @@ def silhouette_k(data, n_clusters):
     ax1.axvline(x=silhouette_avg, color="red", linestyle="--")
     return fig, silhouette_avg
 
+def plot_clusters(data, algorithm, args, kwds):
+    """Plotting function taken from goo.gl/6vmhU5
+    """
+    labels = algorithm(*args, **kwds).fit_predict(data)
+    palette = sns.color_palette('deep', np.unique(labels).max() + 1)
+    colors = [palette[x] if x >= 0 else (0.0, 0.0, 0.0) for x in labels]
+    plt.scatter(data.T[0], data.T[1], c=colors, **plot_kwds)
+    frame = plt.gca()
+    frame.axes.get_xaxis().set_visible(False)
+    frame.axes.get_yaxis().set_visible(False)
+    plt.title('Clusters found by {}'.format(str(algorithm.__name__)), fontsize=24)
+    return plt
+
 
 if __name__ == "__main__":
     data = pd.read_csv("FakeCSV.csv")
@@ -65,4 +83,5 @@ if __name__ == "__main__":
     data.head()
     b = score_k(data[list(data.columns)[8:]], krange=range(2,10))
     c = silhouette_k(data[list(data.columns)[8:]], n_clusters=5)
+    plot_clusters(data_keeps, hdbscan.HDBSCAN, (), {'min_cluster_size':10})
    
